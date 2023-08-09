@@ -18,7 +18,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
         self.boxes_are_on_target = [False] * num_boxes
         self.action_space = Discrete(len(ACTION_LOOKUP))
         
-        _ = self.reset()
+        # _ = self.reset()
 
     def step(self, action, observation_mode='rgb_array'):
         assert action in ACTION_LOOKUP
