@@ -75,10 +75,15 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
         # Rewarding great behaviour -> less steps finish = more points
         if self._check_if_all_boxes_on_target():
-            self.reward_last += (1 / self.num_env_steps) * self.reward_finished
+            self.reward_last += (10 / self.num_env_steps) * self.reward_finished
+            self.games_won = self.games_won + 1 #JUST FOR PRINTING
 
         return observation, self.reward_last, done, info
     
+    # Just for debugging#######
+    def percentage_won(self):
+        return self.games_won / self.games_played
+    ########################
     def _calc_current_observation_reward(self, observation):        
         obs_hash = self.hash_observation(observation)
         if obs_hash in self.obs_dict:
@@ -93,8 +98,9 @@ class PushAndPullSokobanEnv(SokobanEnv):
         return hashed_observation
 
     def reward_less_steps(self):
-        return (10 / self.num_env_steps) + 1
-        
+        return (1 / self.num_env_steps) + 1
+        # 1 - (self.num_env_steps / 500)
+
     def _box_getting_closer_reward_calc(self, prev_dist):
         after_dist = self._calc_box_distance_from_target()
         if after_dist > -1 and prev_dist > -1:

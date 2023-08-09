@@ -35,16 +35,18 @@ class SokobanEnv(gym.Env):
         self.penalty_for_step = -0.1
         self.penalty_box_off_target = -1
         self.reward_box_on_target = 1
-        self.reward_finished = 500
+        self.reward_finished = 50
         self.reward_last = 0
-        self.box_getting_farther_from_target_reward = -2.01
+        self.box_getting_farther_from_target_reward = -2
         self.box_getting_closer_to_target_reward = 2
-        self.player_getting_farther_from_box_reward = -2.01
+        self.player_getting_farther_from_box_reward = -2
         self.player_getting_closer_to_box_reward = 2
         self.player_moved_reward = 0.05
         self.new_observation_reward = 0.04
         self.existing_observation_reward = -0.1
 
+        self.games_played = 0#JUST FOR PRINTING
+        self.games_won = 0#JUST FOR PRINTING
         self.obs_dict = {}
         # Other Settings
         self.viewer = None
@@ -213,6 +215,7 @@ class SokobanEnv(gym.Env):
 
     def reset(self, second_player=False, render_mode='rgb_array'):
         # print("RESET!!")
+        self.games_played = self.games_played + 1 #JUST FOR PRINTING
         if (not self.has_started_already):
             print("heyllo")
             try:
