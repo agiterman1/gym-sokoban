@@ -207,7 +207,7 @@ class SokobanEnv(gym.Env):
         return (self.max_steps == self.num_env_steps)
 
     def reset(self, second_player=False, render_mode='rgb_array'):
-        print("RESET!!")
+        # print("RESET!!")
         if (not self.has_started_already):
             print("heyllo")
             try:
