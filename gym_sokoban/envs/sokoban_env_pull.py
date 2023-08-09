@@ -45,7 +45,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
         self._calc_reward()
 
         # Getting closer reward
-        print(self.reward_last)
+        # print(self.reward_last)
         after_dist = self._calc_box_distance_from_target()
         if after_dist > -1 and prev_dist > -1:
             if after_dist < prev_dist:            
