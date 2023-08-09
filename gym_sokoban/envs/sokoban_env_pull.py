@@ -74,21 +74,24 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
         return observation, self.reward_last, done, info
     
+    def reward_less_steps(self):
+        return (1 / self.num_env_steps) + 1
+
     def _box_getting_closer_reward_calc(self, prev_dist):
         after_dist = self._calc_box_distance_from_target()
         if after_dist > -1 and prev_dist > -1:
             if after_dist < prev_dist:         
-                self.reward_last += self.box_getting_closer_to_target_reward
+                self.reward_last += self.reward_less_steps() * self.box_getting_closer_to_target_reward
             elif after_dist > prev_dist:
-                self.reward_last += self.box_getting_farther_from_target_reward
+                self.reward_last += self.reward_less_steps() * self.box_getting_farther_from_target_reward
 
     def _player_proximity_reward_calc(self, prev_player_close_to_box):
         after_player_close_to_box = self._calc_box_distance_from_player()
         if after_player_close_to_box > -1 and prev_player_close_to_box > -1:
             if after_player_close_to_box < prev_player_close_to_box:         
-                self.reward_last += self.player_getting_closer_to_box_reward
+                self.reward_last += self.reward_less_steps() * self.player_getting_closer_to_box_reward
             elif after_player_close_to_box > prev_player_close_to_box:
-                self.reward_last += self.player_getting_farther_from_box_reward
+                self.reward_last += self.reward_less_steps() * self.player_getting_farther_from_box_reward
 
     def _calc_box_distance_from_player(self):
         box_location = self._find_box_location()
