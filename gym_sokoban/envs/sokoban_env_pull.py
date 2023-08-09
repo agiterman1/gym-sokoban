@@ -1,3 +1,4 @@
+import numpy as np
 from .sokoban_env import SokobanEnv, CHANGE_COORDINATES
 from gym.spaces import Box
 from gym.spaces.discrete import Discrete
@@ -18,6 +19,27 @@ class PushAndPullSokobanEnv(SokobanEnv):
         self.action_space = Discrete(len(ACTION_LOOKUP))
         
         _ = self.reset()
+        
+    def reset(self, second_player=False, render_mode='rgb_array'):
+        # try:
+        #     self.room_fixed, self.room_state, self.box_mapping = generate_room(
+        #         dim=self.dim_room,
+        #         num_steps=self.num_gen_steps,
+        #         num_boxes=self.num_boxes,
+        #         second_player=second_player
+        #     )
+        # except (RuntimeError, RuntimeWarning) as e:
+        #     print("[SOKOBAN] Runtime Error/Warning: {}".format(e))
+        #     print("[SOKOBAN] Retry . . .")
+        #     return self.reset(second_player=second_player, render_mode=render_mode)
+        print("in pull directory")
+        self.player_position = np.argwhere(self.room_state == 5)[0]
+        self.num_env_steps = 0
+        self.reward_last = 0
+        self.boxes_on_target = 0
+
+        starting_observation = self.render(render_mode)
+        return starting_observation
 
     def step(self, action, observation_mode='rgb_array'):
         assert action in ACTION_LOOKUP
