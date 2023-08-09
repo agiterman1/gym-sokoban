@@ -44,7 +44,8 @@ class PushAndPullSokobanEnv(SokobanEnv):
             moved_player, moved_box = self._pull(action)
 
         self._calc_reward()
-
+        if not moved_player:
+            self.reward_last += -0.2
         # Getting player to box proximity
         self._player_proximity_reward_calc(prev_player_close_to_box)
         
