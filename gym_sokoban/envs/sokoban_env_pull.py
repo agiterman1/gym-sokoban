@@ -22,7 +22,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
     def step(self, action, observation_mode='rgb_array'):
         assert action in ACTION_LOOKUP
-        prev_dist = self.distance()
+        prev_dist = self._calc_box_distance_from_target()
         self.num_env_steps += 1
 
         self.new_box_position = None
@@ -46,7 +46,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
         # Getting closer reward
         print(self.reward_last)
-        after_dist = self.distance()
+        after_dist = self._calc_box_distance_from_target()
         if after_dist > -1 and prev_dist > -1:
             if after_dist < prev_dist:            
                 self.reward_last += self.getting_closer_reward
@@ -70,7 +70,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
         return observation, self.reward_last, done, info
     
-    def _calc_box_from_target(self):
+    def _calc_box_distance_from_target(self):
         box_location = self._find_box_location()
         target_location = self._find_target_location()
         if box_location is None or target_location is None:
