@@ -44,8 +44,10 @@ class PushAndPullSokobanEnv(SokobanEnv):
             moved_player, moved_box = self._pull(action)
 
         self._calc_reward()
-        if not moved_player:
-            self.reward_last += self.player_not_moved_reward
+
+        # Rewarding if player has moved
+        if moved_player:
+            self.reward_last += self.player_moved_reward
         # Getting player to box proximity
         self._player_proximity_reward_calc(prev_player_close_to_box)
         
@@ -65,6 +67,10 @@ class PushAndPullSokobanEnv(SokobanEnv):
         if done:
             info["maxsteps_used"] = self._check_if_maxsteps()
             info["all_boxes_on_target"] = self._check_if_all_boxes_on_target()
+
+        # Rewarding great behaviour -> less steps finish = more points
+        if self._check_if_all_boxes_on_target():
+            self.reward_last += (1 / self.num_env_steps) * self.reward_finished
 
         return observation, self.reward_last, done, info
     
