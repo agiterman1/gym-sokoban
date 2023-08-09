@@ -216,9 +216,9 @@ class SokobanEnv(gym.Env):
                     num_boxes=self.num_boxes,
                     second_player=second_player
                 )
-                self.original_room_fixed = self.room_fixed
-                self.original_room_state = self.room_state
-                self.original_box_mapping = self.box_mapping
+                self.original_room_fixed = copy.deepcopy(self.room_fixed)
+                self.original_room_state = copy.deepcopy(self.room_state)
+                self.original_box_mapping = copy.deepcopy(self.box_mapping)
             except (RuntimeError, RuntimeWarning) as e:
                 print("[SOKOBAN] Runtime Error/Warning: {}".format(e))
                 print("[SOKOBAN] Retry . . .")
