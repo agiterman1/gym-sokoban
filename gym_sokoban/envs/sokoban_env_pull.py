@@ -21,7 +21,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
     def step(self, action, observation_mode='rgb_array'):
         assert action in ACTION_LOOKUP
-
+        #test
         self.num_env_steps += 1
 
         self.new_box_position = None
