@@ -84,15 +84,16 @@ class PushAndPullSokobanEnv(SokobanEnv):
     def percentage_won(self):
         return self.games_won / self.games_played
     ########################
-    
+
     def _calc_current_observation_reward(self, observation):        
         obs_hash = self.hash_observation(observation)
-        if obs_hash in self.obs_dict:
-            self.reward_last += self.new_observation_reward
-        else:
+        if obs_hash not in self.obs_dict:
             self.obs_dict[obs_hash] = observation
             self.reward_last += self.existing_observation_reward
 
+         # else:
+         #     self.reward_last += self.new_observation_reward
+       
     def hash_observation(self, observation):
         observation_str = np.array2string(observation, separator=',', suppress_small=True)
         hashed_observation = hashlib.sha256(observation_str.encode()).hexdigest()
@@ -105,13 +106,11 @@ class PushAndPullSokobanEnv(SokobanEnv):
         after_dist = self._calc_box_distance_from_target()
         if after_dist > -1 and prev_dist > -1:
             if after_dist < prev_dist:
-                self.box_got_closer = self.box_got_closer + 1  
-                self.box_got_farther = self.box_got_farther - 1       
-                self.reward_last += self.reward_less_steps() * self.box_getting_closer_to_target_reward * max(1,self.box_got_closer)
+                self.box_distance_from_target_multiplier = self.box_distance_from_target_multiplier * 2    
+                self.reward_last += self.reward_less_steps() * self.box_getting_closer_to_target_reward * self.box_distance_from_target_multiplier
             elif after_dist > prev_dist:
-                self.box_got_farther = self.box_got_farther + 1
-                self.box_got_closer = self.box_got_closer - 1
-                self.reward_last += self.reward_less_steps() * self.box_getting_farther_from_target_reward * max(1,self.box_got_farther)
+                self.reward_last += self.reward_less_steps() * self.box_getting_farther_from_target_reward * max(1,self.box_got_farther) * self.box_distance_from_target_multiplier
+                self.box_distance_from_target_multiplier = self.box_distance_from_target_multiplier / 2
 
     def _player_proximity_reward_calc(self, prev_player_close_to_box):
         after_player_close_to_box = self._calc_box_distance_from_player()

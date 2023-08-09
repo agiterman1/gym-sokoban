@@ -32,7 +32,7 @@ class SokobanEnv(gym.Env):
         self.boxes_on_target = 0
 
         # Penalties and Rewards
-        self.penalty_for_step = -0.1
+        self.penalty_for_step = -0.2
         self.penalty_box_off_target = -1
         self.reward_box_on_target = 1
         self.reward_finished = 50
@@ -42,13 +42,12 @@ class SokobanEnv(gym.Env):
         self.player_getting_farther_from_box_reward = -1
         self.player_getting_closer_to_box_reward = 1
         # self.player_moved_reward = 0.05
-        self.new_observation_reward = 0.05
+        # self.new_observation_reward = 0.05
         self.existing_observation_reward = -0.05
 
         self.games_played = 0#JUST FOR PRINTING
         self.games_won = 0#JUST FOR PRINTING
-        self.box_got_closer = 0
-        self.box_got_farther = 0
+        self.box_distance_from_target_multiplier = 1
         self.obs_dict = {}
         # Other Settings
         self.viewer = None
