@@ -37,16 +37,18 @@ class SokobanEnv(gym.Env):
         self.reward_box_on_target = 1
         self.reward_finished = 50
         self.reward_last = 0
-        self.box_getting_farther_from_target_reward = -2
-        self.box_getting_closer_to_target_reward = 2
-        self.player_getting_farther_from_box_reward = -2
-        self.player_getting_closer_to_box_reward = 2
+        self.box_getting_farther_from_target_reward = -1
+        self.box_getting_closer_to_target_reward = 1
+        self.player_getting_farther_from_box_reward = -1
+        self.player_getting_closer_to_box_reward = 1
         # self.player_moved_reward = 0.05
         self.new_observation_reward = 0.05
         self.existing_observation_reward = -0.05
 
         self.games_played = 0#JUST FOR PRINTING
         self.games_won = 0#JUST FOR PRINTING
+        self.box_got_closer = 0
+        self.box_got_farther = 0
         self.obs_dict = {}
         # Other Settings
         self.viewer = None

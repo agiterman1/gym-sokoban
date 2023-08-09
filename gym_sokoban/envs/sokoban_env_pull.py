@@ -84,6 +84,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
     def percentage_won(self):
         return self.games_won / self.games_played
     ########################
+    
     def _calc_current_observation_reward(self, observation):        
         obs_hash = self.hash_observation(observation)
         if obs_hash in self.obs_dict:
@@ -98,16 +99,19 @@ class PushAndPullSokobanEnv(SokobanEnv):
         return hashed_observation
 
     def reward_less_steps(self):
-        return (1 / self.num_env_steps) + 1
-        # 1 - (self.num_env_steps / 500)
+        return 2 - (self.num_env_steps / 500)
 
     def _box_getting_closer_reward_calc(self, prev_dist):
         after_dist = self._calc_box_distance_from_target()
         if after_dist > -1 and prev_dist > -1:
-            if after_dist < prev_dist:         
-                self.reward_last += self.reward_less_steps() * self.box_getting_closer_to_target_reward
+            if after_dist < prev_dist:
+                self.box_got_closer = self.box_got_closer + 1  
+                self.box_got_farther = self.box_got_farther - 1       
+                self.reward_last += self.reward_less_steps() * self.box_getting_closer_to_target_reward * max(1,self.box_got_closer)
             elif after_dist > prev_dist:
-                self.reward_last += self.reward_less_steps() * self.box_getting_farther_from_target_reward
+                self.box_got_farther = self.box_got_farther + 1
+                self.box_got_closer = self.box_got_closer - 1
+                self.reward_last += self.reward_less_steps() * self.box_getting_farther_from_target_reward * max(1,self.box_got_farther)
 
     def _player_proximity_reward_calc(self, prev_player_close_to_box):
         after_player_close_to_box = self._calc_box_distance_from_player()
