@@ -78,28 +78,26 @@ class PushAndPullSokobanEnv(SokobanEnv):
         after_dist = self._calc_box_distance_from_target()
         if after_dist > -1 and prev_dist > -1:
             if after_dist < prev_dist:         
-                self.reward_last += self.getting_closer_reward
+                self.reward_last += self.box_getting_closer_to_target_reward
             elif after_dist > prev_dist:
-                self.reward_last += self.getting_farther_reward
+                self.reward_last += self.box_getting_farther_from_target_reward
 
     def _player_proximity_reward_calc(self, prev_player_close_to_box):
-        after_player_close_to_box = self._box_close_to_player()
-        if prev_player_close_to_box and not after_player_close_to_box:
-            self.reward_last += self.player_getting_farther_from_box_reward
-        elif not prev_player_close_to_box and after_player_close_to_box:
-            self.reward_last += self.player_getting_closer_to_box_reward
+        after_player_close_to_box = self._calc_box_distance_from_player()
+        if after_player_close_to_box > -1 and prev_player_close_to_box > -1:
+            if after_player_close_to_box < prev_player_close_to_box:         
+                self.reward_last += self.player_getting_closer_to_box_reward
+            elif after_player_close_to_box > prev_player_close_to_box:
+                self.reward_last += self.player_getting_farther_from_box_reward
 
-    def _box_close_to_player(self):
+    def _calc_box_distance_from_player(self):
         box_location = self._find_box_location()
         if box_location is None or self.player_position is None:
-            return False
+            return -1
 
-        distance = max(box_location[0] - self.player_position[0], box_location[1] - self.player_position[1])
-        if distance == 1:
-            return True
-        return False
+        distance = (box_location[0] - self.player_position[0])**2 + (box_location[1] - self.player_position[1])**2 #no need to square root
+        return distance
     
-
     def _calc_box_distance_from_target(self):
         box_location = self._find_box_location()
         target_location = self._find_target_location()
