@@ -203,8 +203,8 @@ class SokobanEnv(gym.Env):
         return (self.max_steps == self.num_env_steps)
 
     def reset(self, second_player=False, render_mode='rgb_array'):
-        print("reseting main")
         if (not self.has_started_already):
+            print("heyllo")
             try:
                 self.has_started_already = True
                 self.room_fixed, self.room_state, self.box_mapping = generate_room(
@@ -221,9 +221,9 @@ class SokobanEnv(gym.Env):
                 print("[SOKOBAN] Retry . . .")
                 return self.reset(second_player=second_player, render_mode=render_mode)
         
-        self.room_fixed = self.original_room_fixed
-        self.room_state = self.original_room_state
-        self.box_mapping = self.original_box_mapping
+        self.room_fixed = copy.deepcopy(self.original_room_fixed)
+        self.room_state = copy.deepcopy(self.original_room_state)
+        self.box_mapping = copy.deepcopy(self.original_box_mapping)
         self.player_position = np.argwhere(self.room_state == 5)[0]
         self.num_env_steps = 0
         self.reward_last = 0
