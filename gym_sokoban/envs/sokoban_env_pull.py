@@ -62,7 +62,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
         observation = self.render(mode=observation_mode)
 
         # Reward/punish based on current observation if it happened or not
-        self._calc_current_observation_reward(observation)
+        # self._calc_current_observation_reward(observation)
 
         info = {
             "action.name": ACTION_LOOKUP[action],
