@@ -3,6 +3,8 @@ from .sokoban_env import SokobanEnv, CHANGE_COORDINATES
 from gym.spaces import Box
 from gym.spaces.discrete import Discrete
 import copy
+import hashlib
+
 
 class PushAndPullSokobanEnv(SokobanEnv):
 
@@ -59,6 +61,9 @@ class PushAndPullSokobanEnv(SokobanEnv):
         # Convert the observation to RGB frame
         observation = self.render(mode=observation_mode)
 
+        # Reward/punish based on current observation if it happened or not
+        self._calc_current_observation_reward(observation)
+
         info = {
             "action.name": ACTION_LOOKUP[action],
             "action.moved_player": moved_player,
@@ -74,6 +79,19 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
         return observation, self.reward_last, done, info
     
+    def _calc_current_observation_reward(self, observation):        
+        obs_hash = self.hash_observation(observation)
+        if obs_hash in self.obs_dict:
+            self.reward_last += self.new_observation_reward
+        else:
+            self.obs_dict[obs_hash] = observation
+            self.reward_last += self.existing_observation_reward
+
+    def hash_observation(self, observation):
+        observation_str = np.array2string(observation, separator=',', suppress_small=True)
+        hashed_observation = hashlib.sha256(observation_str.encode()).hexdigest()
+        return hashed_observation
+
     def reward_less_steps(self):
         return (1 / self.num_env_steps) + 1
 

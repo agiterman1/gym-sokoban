@@ -42,6 +42,10 @@ class SokobanEnv(gym.Env):
         self.player_getting_farther_from_box_reward = -2.01
         self.player_getting_closer_to_box_reward = 2
         self.player_moved_reward = 0.05
+        self.new_observation_reward = 0.06
+        self.existing_observation_reward = -0.1
+
+        self.obs_dict = {}
         # Other Settings
         self.viewer = None
         self.max_steps = max_steps
