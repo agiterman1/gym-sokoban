@@ -42,8 +42,8 @@ class SokobanEnv(gym.Env):
         self.player_getting_farther_from_box_reward = -2
         self.player_getting_closer_to_box_reward = 2
         # self.player_moved_reward = 0.05
-        self.new_observation_reward = 0.1
-        self.existing_observation_reward = -0.1
+        self.new_observation_reward = 0.05
+        self.existing_observation_reward = -0.05
 
         self.games_played = 0#JUST FOR PRINTING
         self.games_won = 0#JUST FOR PRINTING
