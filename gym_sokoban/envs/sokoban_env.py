@@ -44,9 +44,12 @@ class SokobanEnv(gym.Env):
         screen_height, screen_width = (dim_room[0] * 16, dim_room[1] * 16)
         self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 3), dtype=np.uint8)
         
+        self.has_started_already = False
+
         if reset:
             # Initialize Room
             _ = self.reset()
+        
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -201,20 +204,27 @@ class SokobanEnv(gym.Env):
 
     def reset(self, second_player=False, render_mode='rgb_array'):
         print("reseting main")
-        try:
-            self.room_fixed, self.room_state, self.box_mapping = generate_room(
-                dim=self.dim_room,
-                num_steps=self.num_gen_steps,
-                num_boxes=self.num_boxes,
-                second_player=second_player
-            )
-            self.initial_player_position = np.argwhere(self.room_state == 5)[0]
-        except (RuntimeError, RuntimeWarning) as e:
-            print("[SOKOBAN] Runtime Error/Warning: {}".format(e))
-            print("[SOKOBAN] Retry . . .")
-            return self.reset(second_player=second_player, render_mode=render_mode)
-        print(self.room_state)
-        self.player_position = self.initial_player_position
+        if (self.has_started_already):
+            try:
+                self.has_started_already = True
+                self.room_fixed, self.room_state, self.box_mapping = generate_room(
+                    dim=self.dim_room,
+                    num_steps=self.num_gen_steps,
+                    num_boxes=self.num_boxes,
+                    second_player=second_player
+                )
+                self.original_room_fixed = self.room_fixed
+                self.original_room_state = self.room_state
+                self.original_box_mapping = self.box_mapping
+            except (RuntimeError, RuntimeWarning) as e:
+                print("[SOKOBAN] Runtime Error/Warning: {}".format(e))
+                print("[SOKOBAN] Retry . . .")
+                return self.reset(second_player=second_player, render_mode=render_mode)
+        
+        self.room_fixed = self.original_room_fixed
+        self.room_state = self.original_room_state
+        self.box_mapping = self.original_box_mapping
+        self.player_position = np.argwhere(self.room_state == 5)[0]
         self.num_env_steps = 0
         self.reward_last = 0
         self.boxes_on_target = 0
