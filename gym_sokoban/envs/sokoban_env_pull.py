@@ -22,7 +22,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
     def step(self, action, observation_mode='rgb_array'):
         assert action in ACTION_LOOKUP
-        #test
+        prev_dist = self.distance()
         self.num_env_steps += 1
 
         self.new_box_position = None
@@ -44,6 +44,13 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
         self._calc_reward()
 
+        # Getting closer reward
+        after_dist = self.distance()
+        if after_dist < prev_dist:
+            self.reward_last += self.getting_closer_reward
+        elif after_dist > prev_dist:
+            self.reward_last += self.getting_farther_reward
+
         done = self._check_if_done()
 
         # Convert the observation to RGB frame
@@ -59,6 +66,18 @@ class PushAndPullSokobanEnv(SokobanEnv):
             info["all_boxes_on_target"] = self._check_if_all_boxes_on_target()
 
         return observation, self.reward_last, done, info
+    
+    def distance(self):
+        idx = np.argmax(self.room_state == 4)
+        if self.room_state.flat[idx] == 4:
+            box_location = np.unravel_index(idx, self.room_state.shape)
+
+        idx = np.argmax(self.room_state == 2)
+        if self.room_state.flat[idx] == 2:
+            target_location = np.unravel_index(idx, self.room_state.shape)
+
+        dist = abs(box_location[0] - target_location[0]) + abs(box_location[1] - target_location[1])
+        return dist
 
     def _pull(self, action):
         """
