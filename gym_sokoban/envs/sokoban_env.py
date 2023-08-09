@@ -212,7 +212,7 @@ class SokobanEnv(gym.Env):
             print("[SOKOBAN] Runtime Error/Warning: {}".format(e))
             print("[SOKOBAN] Retry . . .")
             return self.reset(second_player=second_player, render_mode=render_mode)
-        print(self.room_state)
+        print(np.argwhere(self.room_state == 5))
         self.player_position = np.argwhere(self.room_state == 5)[0]
         self.num_env_steps = 0
         self.reward_last = 0
