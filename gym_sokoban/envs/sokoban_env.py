@@ -204,7 +204,7 @@ class SokobanEnv(gym.Env):
 
     def reset(self, second_player=False, render_mode='rgb_array'):
         print("reseting main")
-        if (self.has_started_already):
+        if (not self.has_started_already):
             try:
                 self.has_started_already = True
                 self.room_fixed, self.room_state, self.box_mapping = generate_room(
