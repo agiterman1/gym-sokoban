@@ -5,6 +5,7 @@ from gym.spaces import Box
 from .room_utils import generate_room
 from .render_utils import room_to_rgb, room_to_tiny_world_rgb
 import numpy as np
+import copy
 
 
 class SokobanEnv(gym.Env):
