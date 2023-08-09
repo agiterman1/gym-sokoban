@@ -47,11 +47,13 @@ class PushAndPullSokobanEnv(SokobanEnv):
         # Getting closer reward
         print(self.reward_last)
         after_dist = self.distance()
-        if after_dist < prev_dist:            
-            self.reward_last += self.getting_closer_reward
-        elif after_dist > prev_dist:
-            self.reward_last += self.getting_farther_reward
-            
+        if after_dist > -1 and prev_dist > -1:
+            if after_dist < prev_dist:            
+                self.reward_last += self.getting_closer_reward
+            elif after_dist > prev_dist:
+                self.reward_last += self.getting_farther_reward
+        else:
+            print("distance NONE!!!!")
         done = self._check_if_done()
 
         # Convert the observation to RGB frame
@@ -68,21 +70,29 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
         return observation, self.reward_last, done, info
     
-    def distance(self):
+    def _calc_box_from_target(self):
         box_location = self._find_box_location()
         target_location = self._find_target_location()
+        if box_location is None or target_location is None:
+            return -1
 
-        idx = np.argmax(self.room_state == 4)
-        if self.room_state.flat[idx] == 4:
-            box_location = np.unravel_index(idx, self.room_state.shape)
-
+        distance = abs(box_location[0] - target_location[0]) + abs(box_location[1] - target_location[1])
+        return distance
+    
+    def _find_target_location(self):
         idx = np.argmax(self.room_state == 2)
         if self.room_state.flat[idx] == 2:
-            target_location = np.unravel_index(idx, self.room_state.shape)
+            self.current_target_pos = np.unravel_index(idx, self.room_state.shape)
 
-        dist = abs(box_location[0] - target_location[0]) + abs(box_location[1] - target_location[1])
-        return dist
+        return self.current_target_pos
 
+    def _find_box_location(self):
+        idx = np.argmax(self.room_state == 4)
+        if self.room_state.flat[idx] == 4:
+            self.current_box_pos = np.unravel_index(idx, self.room_state.shape)
+
+        return self.current_box_pos
+    
     def _pull(self, action):
         """
         Moves the player to the next field, if it is not occupied.
