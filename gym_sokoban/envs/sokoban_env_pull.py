@@ -23,7 +23,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
     def step(self, action, observation_mode='rgb_array'):
         assert action in ACTION_LOOKUP
         prev_dist = self._calc_box_distance_from_target()
-        prev_player_close_to_box = self._box_getting_closer_reward_calc()
+        prev_player_close_to_box = self._calc_box_distance_from_player()
         self.num_env_steps += 1
 
         self.new_box_position = None
