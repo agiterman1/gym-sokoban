@@ -48,8 +48,8 @@ class PushAndPullSokobanEnv(SokobanEnv):
         self._calc_reward()
 
         # Rewarding if player has moved
-        if moved_player:
-            self.reward_last += self.player_moved_reward
+        # if moved_player:
+        #     self.reward_last += self.player_moved_reward
         # Getting player to box proximity
         self._player_proximity_reward_calc(prev_player_close_to_box)
         
@@ -62,7 +62,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
         observation = self.render(mode=observation_mode)
 
         # Reward/punish based on current observation if it happened or not
-        # self._calc_current_observation_reward(observation)
+        self._calc_current_observation_reward(observation)
 
         info = {
             "action.name": ACTION_LOOKUP[action],
