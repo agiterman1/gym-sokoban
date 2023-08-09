@@ -37,10 +37,11 @@ class SokobanEnv(gym.Env):
         self.reward_box_on_target = 1
         self.reward_finished = 50
         self.reward_last = 0
-        self.getting_farther_reward = -5
+        self.getting_farther_reward = -10
         self.getting_closer_reward = 5
-        self.player_getting_farther_from_box_reward = -2
+        self.player_getting_farther_from_box_reward = -4
         self.player_getting_closer_to_box_reward = 2
+        self.player_not_moved_reward = -5
         # Other Settings
         self.viewer = None
         self.max_steps = max_steps

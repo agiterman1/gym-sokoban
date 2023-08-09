@@ -45,7 +45,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
         self._calc_reward()
         if not moved_player:
-            self.reward_last += -0.2
+            self.reward_last += self.player_not_moved_reward
         # Getting player to box proximity
         self._player_proximity_reward_calc(prev_player_close_to_box)
         
@@ -100,7 +100,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
         if box_location is None or target_location is None:
             return -1
 
-        distance = abs(box_location[0] - target_location[0]) + abs(box_location[1] - target_location[1])
+        distance = (box_location[0] - target_location[0])**2 + (box_location[1] - target_location[1])**2 #no need to square root
         return distance
     
     def _find_target_location(self):
