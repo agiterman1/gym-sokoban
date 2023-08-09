@@ -23,6 +23,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
     def step(self, action, observation_mode='rgb_array'):
         assert action in ACTION_LOOKUP
         prev_dist = self._calc_box_distance_from_target()
+        prev_player_close_to_box = self._box_close_to_player()
         self.num_env_steps += 1
 
         self.new_box_position = None
@@ -44,18 +45,12 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
         self._calc_reward()
 
+        # Getting player to box proximity
+        self._player_proximity_reward_calc(prev_player_close_to_box)
+        
         # Getting closer reward
-        # print(self.reward_last)
-        after_dist = self._calc_box_distance_from_target()
-        if after_dist > -1 and prev_dist > -1:
-            if after_dist < prev_dist:         
-                print("moved closer")   
-                self.reward_last += self.getting_closer_reward
-            elif after_dist > prev_dist:
-                print("moved farther")
-                self.reward_last += self.getting_farther_reward
-        else:
-            print("distance NONE!!!!")
+        self._box_getting_closer_reward_calc(prev_dist)
+        
         done = self._check_if_done()
 
         # Convert the observation to RGB frame
@@ -72,6 +67,39 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
         return observation, self.reward_last, done, info
     
+    def _box_getting_closer_reward_calc(self, prev_dist):
+        after_dist = self._calc_box_distance_from_target()
+        if after_dist > -1 and prev_dist > -1:
+            if after_dist < prev_dist:         
+                print("moved closer")   
+                self.reward_last += self.getting_closer_reward
+            elif after_dist > prev_dist:
+                print("moved farther")
+                self.reward_last += self.getting_farther_reward
+        else:
+            print("distance NONE!!!!")
+
+    def _player_proximity_reward_calc(self, prev_player_close_to_box):
+        after_player_close_to_box = self._box_close_to_player()
+        if prev_player_close_to_box and not after_player_close_to_box:
+            print("player in proximity to box")
+            self.reward_last += self.player_getting_farther_from_box_reward
+        elif not prev_player_close_to_box and after_player_close_to_box:
+            print("player went outside of proximity of box")
+            self.reward_last += self.player_getting_closer_to_box_reward
+
+    def _box_close_to_player(self):
+        box_location = self._find_box_location()
+        print(self.player_position)
+        if box_location is None or self.player_position is None:
+            return False
+
+        distance = max(box_location[0] - self.player_position[0], box_location[1] - self.player_position[1])
+        if distance == 1:
+            return True
+        return False
+    
+
     def _calc_box_distance_from_target(self):
         box_location = self._find_box_location()
         target_location = self._find_target_location()
