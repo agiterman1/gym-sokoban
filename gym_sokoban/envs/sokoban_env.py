@@ -200,6 +200,7 @@ class SokobanEnv(gym.Env):
         return (self.max_steps == self.num_env_steps)
 
     def reset(self, second_player=False, render_mode='rgb_array'):
+        print("reseting main")
         try:
             self.room_fixed, self.room_state, self.box_mapping = generate_room(
                 dim=self.dim_room,
