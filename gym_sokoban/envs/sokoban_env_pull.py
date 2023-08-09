@@ -45,12 +45,13 @@ class PushAndPullSokobanEnv(SokobanEnv):
         self._calc_reward()
 
         # Getting closer reward
+        print(self.reward_last)
         after_dist = self.distance()
-        if after_dist < prev_dist:
+        if after_dist < prev_dist:            
             self.reward_last += self.getting_closer_reward
         elif after_dist > prev_dist:
             self.reward_last += self.getting_farther_reward
-
+            
         done = self._check_if_done()
 
         # Convert the observation to RGB frame
@@ -68,6 +69,9 @@ class PushAndPullSokobanEnv(SokobanEnv):
         return observation, self.reward_last, done, info
     
     def distance(self):
+        box_location = self._find_box_location()
+        target_location = self._find_target_location()
+
         idx = np.argmax(self.room_state == 4)
         if self.room_state.flat[idx] == 4:
             box_location = np.unravel_index(idx, self.room_state.shape)
