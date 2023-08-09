@@ -93,8 +93,8 @@ class PushAndPullSokobanEnv(SokobanEnv):
         return hashed_observation
 
     def reward_less_steps(self):
-        return (1 / self.num_env_steps) + 1
-
+        return (10 / self.num_env_steps) + 1
+        
     def _box_getting_closer_reward_calc(self, prev_dist):
         after_dist = self._calc_box_distance_from_target()
         if after_dist > -1 and prev_dist > -1:
