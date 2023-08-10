@@ -30,7 +30,7 @@ class SokobanEnv(gym.Env):
 
         self.num_boxes = num_boxes
         self.boxes_on_target = 0
-        
+
         # Penalties and Rewards
         self.penalty_for_step = -0.1
         self.penalty_box_off_target = -1
@@ -227,8 +227,8 @@ class SokobanEnv(gym.Env):
 
     def reset(self, second_player=False, render_mode='rgb_array'):
         # print("RESET!!")
-        self.box_distance_from_target_multiplier = 1
-        self.games_played = self.games_played + 1 #JUST FOR PRINTING
+        # self.box_distance_from_target_multiplier = 1
+        # self.games_played = self.games_played + 1 #JUST FOR PRINTING
         if (not self.has_started_already):
             print("heyllo")
             try:
