@@ -20,7 +20,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
         self.boxes_are_on_target = [False] * num_boxes
         self.action_space = Discrete(len(ACTION_LOOKUP))
         
-        # _ = self.reset()
+        _ = self.reset()
 
     def step(self, action, observation_mode='rgb_array'):
         assert action in ACTION_LOOKUP
@@ -75,7 +75,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
         # Rewarding great behaviour -> less steps finish = more points
         if self._check_if_all_boxes_on_target():
-            self.reward_last += (10 / self.num_env_steps) * self.reward_finished
+            # self.reward_last += self.reward_finished
             self.games_won = self.games_won + 1 #JUST FOR PRINTING
 
         return observation, self.reward_last, done, info
@@ -99,26 +99,26 @@ class PushAndPullSokobanEnv(SokobanEnv):
         hashed_observation = hashlib.sha256(observation_str.encode()).hexdigest()
         return hashed_observation
 
-    def reward_less_steps(self):
-        return 2 - (self.num_env_steps / 500)
+    # def reward_less_steps(self):
+    #     return 2 - (self.num_env_steps / 500)
 
     def _box_getting_closer_reward_calc(self, prev_dist):
         after_dist = self._calc_box_distance_from_target()
         if after_dist > -1 and prev_dist > -1:
             if after_dist < prev_dist:
+                self.reward_last += self.box_getting_closer_to_target_reward * self.box_distance_from_target_multiplier
                 self.box_distance_from_target_multiplier = self.box_distance_from_target_multiplier * 2    
-                self.reward_last += self.reward_less_steps() * self.box_getting_closer_to_target_reward * self.box_distance_from_target_multiplier
             elif after_dist > prev_dist:
-                self.reward_last += self.reward_less_steps() * self.box_getting_farther_from_target_reward * self.box_distance_from_target_multiplier
                 self.box_distance_from_target_multiplier = self.box_distance_from_target_multiplier / 2
-
+                self.reward_last += self.box_getting_farther_from_target_reward * self.box_distance_from_target_multiplier
+                
     def _player_proximity_reward_calc(self, prev_player_close_to_box):
         after_player_close_to_box = self._calc_box_distance_from_player()
         if after_player_close_to_box > -1 and prev_player_close_to_box > -1:
             if after_player_close_to_box < prev_player_close_to_box:         
-                self.reward_last += self.reward_less_steps() * self.player_getting_closer_to_box_reward
+                self.reward_last += self.player_getting_closer_to_box_reward
             elif after_player_close_to_box > prev_player_close_to_box:
-                self.reward_last += self.reward_less_steps() * self.player_getting_farther_from_box_reward
+                self.reward_last += self.player_getting_farther_from_box_reward
 
     def _calc_box_distance_from_player(self):
         box_location = self._find_box_location()
