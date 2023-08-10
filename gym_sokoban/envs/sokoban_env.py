@@ -32,15 +32,15 @@ class SokobanEnv(gym.Env):
         self.boxes_on_target = 0
 
         # Penalties and Rewards
-        self.penalty_for_step = -0.2 + (self.num_env_steps / 250)
+        self.penalty_for_step = -0.2
         self.penalty_box_off_target = -1
         self.reward_box_on_target = 1
-        self.reward_finished = self.reward_less_steps() * 50
+        self.reward_finished = 50
         self.reward_last = 0
-        self.box_getting_farther_from_target_reward = self.reward_less_steps() * -1
-        self.box_getting_closer_to_target_reward = self.reward_less_steps() * 1
-        self.player_getting_farther_from_box_reward = self.reward_less_steps() * -1
-        self.player_getting_closer_to_box_reward = self.reward_less_steps() * 1
+        self.box_getting_farther_from_target_reward = -1
+        self.box_getting_closer_to_target_reward = 1
+        self.player_getting_farther_from_box_reward = -1
+        self.player_getting_closer_to_box_reward = 1
         # self.player_moved_reward = 0.05
         # self.new_observation_reward = 0.05
         self.existing_observation_reward = -0.05
@@ -61,9 +61,6 @@ class SokobanEnv(gym.Env):
         if reset:
             # Initialize Room
             _ = self.reset()
-        
-    def reward_less_steps(self):
-        return 2 - (self.num_env_steps / 500)
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
