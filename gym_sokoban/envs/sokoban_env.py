@@ -49,6 +49,7 @@ class SokobanEnv(gym.Env):
         self.games_played = 0#JUST FOR PRINTING
         self.games_won = 0#JUST FOR PRINTING
         self.box_distance_from_target_multiplier = 1
+        self.player_close_to_box_reward = 0.19
         self.obs_dict = {}
         # Other Settings
         self.viewer = None

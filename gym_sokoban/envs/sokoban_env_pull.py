@@ -56,6 +56,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
         self._box_getting_closer_reward_calc(prev_dist)
         # Punish steps harder the more steps it does
         self._punish_steps()
+        self._reward_player_close_to_box()
         done = self._check_if_done()
 
         # Convert the observation to RGB frame
@@ -84,6 +85,10 @@ class PushAndPullSokobanEnv(SokobanEnv):
     def percentage_won(self):
         return self.games_won / self.games_played
     ########################
+
+    def _reward_player_close_to_box(self):
+        if self._calc_box_distance_from_target() == 1:
+            self.reward_last += self.player_close_to_box_reward
 
     def _punish_steps(self):
         self.reward_last += - (self.num_env_steps / 1000)
@@ -128,7 +133,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
         if box_location is None or self.player_position is None:
             return -1
 
-        distance = (box_location[0] - self.player_position[0])**2 + (box_location[1] - self.player_position[1])**2 #no need to square root
+        distance = max((box_location[0] - self.player_position[0]),(box_location[1] - self.player_position[1]))
         return distance
     
     def _calc_box_distance_from_target(self):
