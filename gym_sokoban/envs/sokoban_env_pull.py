@@ -24,8 +24,8 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
     def step(self, action, observation_mode='rgb_array'):
         assert action in ACTION_LOOKUP
-        # prev_dist = self._calc_box_distance_from_target()
-        # prev_player_close_to_box = self._calc_box_distance_from_player()
+        prev_dist = self._calc_box_distance_from_target()
+        prev_player_close_to_box = self._calc_box_distance_from_player()
         self.num_env_steps += 1
 
         self.new_box_position = None
@@ -47,20 +47,20 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
         self._calc_reward()
 
-        # # Getting player to box proximity
-        # self._player_proximity_reward_calc(prev_player_close_to_box)
-        # # Getting closer reward
-        # self._box_getting_closer_reward_calc(prev_dist)
-        # # Punish steps harder the more steps it does
-        # # self._punish_steps()
-        # self._reward_player_close_to_box()
+        # Getting player to box proximity
+        self._player_proximity_reward_calc(prev_player_close_to_box)
+        # Getting closer reward
+        self._box_getting_closer_reward_calc(prev_dist)
+        # Punish steps harder the more steps it does
+        # self._punish_steps()
+        self._reward_player_close_to_box()
         done = self._check_if_done()
 
         # Convert the observation to RGB frame
         observation = self.render(mode=observation_mode)
 
-        # # Reward/punish based on current observation if it happened or not
-        # self._calc_current_observation_reward(observation)
+        # Reward/punish based on current observation if it happened or not
+        self._calc_current_observation_reward(observation)
 
         info = {
             "action.name": ACTION_LOOKUP[action],
@@ -71,10 +71,10 @@ class PushAndPullSokobanEnv(SokobanEnv):
             info["maxsteps_used"] = self._check_if_maxsteps()
             info["all_boxes_on_target"] = self._check_if_all_boxes_on_target()
 
-        # # Rewarding great behaviour -> less steps finish = more points
-        # if self._check_if_all_boxes_on_target():
-        #     self.reward_last += self.reward_less_steps() * self.reward_finished
-        #     self.games_won = self.games_won + 1 #JUST FOR PRINTING
+        # Rewarding great behaviour -> less steps finish = more points
+        if self._check_if_all_boxes_on_target():
+            self.reward_last += self.reward_less_steps() * self.reward_finished
+            self.games_won = self.games_won + 1 #JUST FOR PRINTING
 
         return observation, self.reward_last, done, info
     
@@ -113,11 +113,11 @@ class PushAndPullSokobanEnv(SokobanEnv):
         after_dist = self._calc_box_distance_from_target()
         if after_dist > -1 and prev_dist > -1:
             if after_dist < prev_dist:
-                self.reward_last += self.reward_less_steps() * self.box_getting_closer_to_target_reward * self.box_distance_from_target_multiplier
-                self.box_distance_from_target_multiplier =self.box_distance_from_target_multiplier + 1    
+                self.reward_last += self.reward_less_steps() * self.box_getting_closer_to_target_reward * self.box_getting_closer_to_target_multiplier
+                self.box_getting_closer_to_target_multiplier = self.box_getting_closer_to_target_multiplier + 1    
             elif after_dist > prev_dist:
-                self.box_distance_from_target_multiplier =self.box_distance_from_target_multiplier - 1
-                self.reward_last += self.reward_less_steps() * self.box_getting_farther_from_target_reward * self.box_distance_from_target_multiplier
+                self.box_getting_farther_to_target_multiplier = self.box_getting_farther_to_target_multiplier + 1
+                self.reward_last += self.reward_less_steps() * self.box_getting_farther_from_target_reward * self.box_getting_farther_to_target_multiplier
                 
     def _player_proximity_reward_calc(self, prev_player_close_to_box):
         after_player_close_to_box = self._calc_box_distance_from_player()
