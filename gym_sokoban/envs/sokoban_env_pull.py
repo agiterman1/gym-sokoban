@@ -89,6 +89,8 @@ class PushAndPullSokobanEnv(SokobanEnv):
     def _reward_player_close_to_box(self):
         if self._calc_box_distance_from_target() == 1:
             self.reward_last += self.player_close_to_box_reward
+        else:
+            self.reward_last += self.player_far_from_box_reward
 
     def _punish_steps(self):
         self.reward_last += - (self.num_env_steps / 1000)
