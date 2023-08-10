@@ -30,28 +30,37 @@ class SokobanEnv(gym.Env):
 
         self.num_boxes = num_boxes
         self.boxes_on_target = 0
-
-        # Penalties and Rewards
-        self.penalty_for_step = -0.05
         
+        # Penalties and Rewards
+        self.penalty_for_step = -0.1
         self.penalty_box_off_target = -1
-        self.reward_box_on_target = 2
-        self.reward_finished = 100
+        self.reward_box_on_target = 1
+        self.reward_finished = 10
         self.reward_last = 0
-        self.box_getting_farther_from_target_reward = -5
-        self.box_getting_closer_to_target_reward = 5
-        self.player_getting_farther_from_box_reward = -2
-        self.player_getting_closer_to_box_reward = 2
-        # self.player_moved_reward = 0.05
-        # self.new_observation_reward = 0.05
-        self.existing_observation_reward = -0.1
+##################
+        # # Penalties and Rewards
+        # self.penalty_for_step = -0.05
+        
+        # self.penalty_box_off_target = -1
+        # self.reward_box_on_target = 2
+        # self.reward_finished = 100
+        # self.reward_last = 0
+        # self.box_getting_farther_from_target_reward = -5
+        # self.box_getting_closer_to_target_reward = 5
+        # self.player_getting_farther_from_box_reward = -2
+        # self.player_getting_closer_to_box_reward = 2
+        # # self.player_moved_reward = 0.05
+        # # self.new_observation_reward = 0.05
+        # self.existing_observation_reward = -0.1
 
-        self.games_played = 0#JUST FOR PRINTING
-        self.games_won = 0#JUST FOR PRINTING
-        self.box_distance_from_target_multiplier = 1
-        self.player_far_from_box_reward = -0.2
-        self.player_close_to_box_reward = 0.3
-        self.obs_dict = {}
+        # self.games_played = 0#JUST FOR PRINTING
+        # self.games_won = 0#JUST FOR PRINTING
+        # self.box_distance_from_target_multiplier = 1
+        # self.player_far_from_box_reward = -0.2
+        # self.player_close_to_box_reward = 0.3
+        # self.obs_dict = {}
+
+        ##########
         # Other Settings
         self.viewer = None
         self.max_steps = max_steps
