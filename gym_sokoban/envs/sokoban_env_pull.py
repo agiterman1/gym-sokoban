@@ -47,15 +47,12 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
         self._calc_reward()
 
-        # Rewarding if player has moved
-        # if moved_player:
-        #     self.reward_last += self.player_moved_reward
         # Getting player to box proximity
         self._player_proximity_reward_calc(prev_player_close_to_box)
         # Getting closer reward
         self._box_getting_closer_reward_calc(prev_dist)
         # Punish steps harder the more steps it does
-        self._punish_steps()
+        # self._punish_steps()
         self._reward_player_close_to_box()
         done = self._check_if_done()
 
@@ -92,8 +89,8 @@ class PushAndPullSokobanEnv(SokobanEnv):
         else:
             self.reward_last += self.player_far_from_box_reward
 
-    def _punish_steps(self):
-        self.reward_last += - (self.num_env_steps / 1000)
+    # def _punish_steps(self):
+    #     self.reward_last += - (self.num_env_steps / 1000)
         
     def _calc_current_observation_reward(self, observation):        
         obs_hash = self.hash_observation(observation)
