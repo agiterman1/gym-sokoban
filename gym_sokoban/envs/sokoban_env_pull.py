@@ -72,6 +72,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
         if done:
             info["maxsteps_used"] = self._check_if_maxsteps()
             info["all_boxes_on_target"] = self._check_if_all_boxes_on_target()
+            self.add_result(self.past_games, self._check_if_all_boxes_on_target())
 
         # Rewarding great behaviour -> less steps finish = more points
         if self._check_if_all_boxes_on_target():
@@ -84,6 +85,14 @@ class PushAndPullSokobanEnv(SokobanEnv):
     def percentage_won(self):
         return self.games_won / self.games_played
     ########################
+
+    def past_games_percentage_won(self):
+        return self.past_games.count(True) / len(self.past_games)
+
+    def add_result(self,new_result):
+        self.past_games.append(new_result)
+        if len(self.past_games) > 50:
+            self.past_games.pop(0)  # Remove the oldest result
 
     def _reward_player_close_to_box(self):
         if self._calc_box_distance_from_target() == 1:
