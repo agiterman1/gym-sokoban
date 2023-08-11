@@ -12,15 +12,16 @@ class PushAndPullSokobanEnv(SokobanEnv):
              dim_room=(10, 10),
              max_steps=120,
              num_boxes=3,
-             num_gen_steps=None):
+             num_gen_steps=None,
+             regen_room = False):
 
-        super(PushAndPullSokobanEnv, self).__init__(dim_room, max_steps, num_boxes, num_gen_steps)
+        super(PushAndPullSokobanEnv, self).__init__(dim_room, max_steps, num_boxes, num_gen_steps, regen_room)
         screen_height, screen_width = (dim_room[0] * 16, dim_room[1] * 16)
         self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 1), dtype=np.uint8)
         self.boxes_are_on_target = [False] * num_boxes
         self.action_space = Discrete(len(ACTION_LOOKUP))
         
-        _ = self.reset()
+        #_ = self.reset(regen_room)
 
     def step(self, action, observation_mode='raw'):
         assert action in ACTION_LOOKUP
