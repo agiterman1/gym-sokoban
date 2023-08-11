@@ -22,7 +22,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
         self.action_space = Discrete(len(ACTION_LOOKUP))
         self.regen_room = regen_room
         
-        #_ = self.reset(regen_room)
+        _ = self.reset(self.regen_room)
 
     def step(self, action, observation_mode='raw'):
         assert action in ACTION_LOOKUP
@@ -114,7 +114,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
        
     def hash_observation(self, observation):
         observation_str = np.array2string(observation, separator=',', suppress_small=True)
-        hashed_observation = hashlib.sha256(observation_str.encode()).hexdigest()
+        hashed_observation = hashlib.crc32(observation_str.encode()) & 0xFFFFFFFF
         return hashed_observation
 
     def reward_less_steps(self):
