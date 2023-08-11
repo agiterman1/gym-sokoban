@@ -54,7 +54,7 @@ def room_to_rgb(room, room_structure=None):
 
     #         room_rgb[x_i:(x_i + 16), y_j:(y_j + 16), :] = surfaces[surfaces_id]
 
-    room_grayscale = np.zeros(shape=(room.shape[0] * 16, room.shape[1] * 16), dtype=np.uint8)
+    room_grayscale = np.zeros(shape=(room.shape[0] * 16, room.shape[1] * 16, 1), dtype=np.uint8)
 
     for i in range(room.shape[0]):
         x_i = i * 16
@@ -64,7 +64,7 @@ def room_to_rgb(room, room_structure=None):
             surfaces_id = room[i, j]
 
             grayscale_surface = np.dot(surfaces[surfaces_id][..., :3], [0.2989, 0.5870, 0.1140]).astype(np.uint8)
-            room_grayscale[x_i:(x_i + 16), y_j:(y_j + 16)] = grayscale_surface
+            room_grayscale[x_i:(x_i + 16), y_j:(y_j + 16), 0] = grayscale_surface
     print(room_grayscale.shape)
     print(room_grayscale)
     return room_grayscale
