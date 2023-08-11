@@ -34,15 +34,15 @@ class PushAndPullSokobanEnv(SokobanEnv):
         self.old_box_position = None
 
         moved_box = False
-        if action == 0:
-            moved_player = False
+        # if action == 0:
+        #     moved_player = False
 
         # All push actions are in the range of [0, 3]
-        if action < 5:
+        if action < 4:
             moved_player, moved_box = self._push(action)
 
-        elif action < 9:
-            moved_player = self._move(action)
+        # elif action < 9:
+        #     moved_player = self._move(action)
 
         else:
             moved_player, moved_box = self._pull(action)
@@ -210,18 +210,18 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
 
 ACTION_LOOKUP = {
-    0: 'no operation',
-    1: 'push up',
-    2: 'push down',
-    3: 'push left',
-    4: 'push right',
-    5: 'move up',
-    6: 'move down',
-    7: 'move left',
-    8: 'move right',
-    9: 'pull up',
-    10: 'pull down',
-    11: 'pull left',
-    12: 'pull right',
+    # 0: 'no operation',
+    0: 'push up',
+    1: 'push down',
+    2: 'push left',
+    3: 'push right',
+    # 5: 'move up',
+    # 6: 'move down',
+    # 7: 'move left',
+    # 8: 'move right',
+    4: 'pull up',
+    5: 'pull down',
+    6: 'pull left',
+    7: 'pull right',
 }
 
