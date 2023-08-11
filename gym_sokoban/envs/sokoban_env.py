@@ -227,7 +227,7 @@ class SokobanEnv(gym.Env):
     def _check_if_maxsteps(self):
         return (self.max_steps == self.num_env_steps)
 
-    def reset(self, second_player=False, render_mode='rgb_array'):
+    def reset(self, second_player=False, render_mode='raw'):
         # print("RESET!!")
         self.box_getting_closer_to_target_multiplier = 1
         self.box_getting_farther_to_target_multiplier = 1
@@ -266,7 +266,7 @@ class SokobanEnv(gym.Env):
 
         img = self.get_image(mode, scale)
 
-        if 'rgb_array' in mode:
+        if 'raw' in mode:
             return img
 
         elif 'human' in mode:
