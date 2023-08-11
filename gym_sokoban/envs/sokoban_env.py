@@ -233,7 +233,7 @@ class SokobanEnv(gym.Env):
         self.box_getting_farther_to_target_multiplier = 1
         self.games_played = self.games_played + 1 #JUST FOR PRINTING
         if (not self.has_started_already or self.regen_room):
-            print("heyllo")
+            # print("heyllo")
             try:
                 self.has_started_already = True
                 self.room_fixed, self.room_state, self.box_mapping = generate_room(
