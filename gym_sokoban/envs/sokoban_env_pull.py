@@ -16,13 +16,13 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
         super(PushAndPullSokobanEnv, self).__init__(dim_room, max_steps, num_boxes, num_gen_steps)
         screen_height, screen_width = (dim_room[0] * 16, dim_room[1] * 16)
-        self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 3), dtype=np.uint8)
+        self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 1), dtype=np.uint8)
         self.boxes_are_on_target = [False] * num_boxes
         self.action_space = Discrete(len(ACTION_LOOKUP))
         
         _ = self.reset()
 
-    def step(self, action, observation_mode='rgb_array'):
+    def step(self, action, observation_mode='raw'):
         assert action in ACTION_LOOKUP
         prev_dist = self._calc_box_distance_from_target()
         prev_player_close_to_box = self._calc_box_distance_from_player()
