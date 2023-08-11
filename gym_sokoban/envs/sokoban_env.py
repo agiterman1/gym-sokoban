@@ -19,8 +19,7 @@ class SokobanEnv(gym.Env):
                  max_steps=120,
                  num_boxes=4,
                  num_gen_steps=None,
-                 reset=True,
-                 regen_room = False):
+                 reset=True):
 
         # General Configuration
         self.dim_room = dim_room
@@ -75,7 +74,7 @@ class SokobanEnv(gym.Env):
 
         if reset:
             # Initialize Room
-            _ = self.reset(regen_room = regen_room)
+            _ = self.reset()
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -228,12 +227,12 @@ class SokobanEnv(gym.Env):
     def _check_if_maxsteps(self):
         return (self.max_steps == self.num_env_steps)
 
-    def reset(self, second_player=False, render_mode='raw', regen_room = False):
+    def reset(self, second_player=False, render_mode='raw'):
         # print("RESET!!")
         self.box_getting_closer_to_target_multiplier = 1
         self.box_getting_farther_to_target_multiplier = 1
         self.games_played = self.games_played + 1 #JUST FOR PRINTING
-        if (not self.has_started_already or regen_room):
+        if (not self.has_started_already or self.regen_room):
             print("heyllo")
             try:
                 self.has_started_already = True

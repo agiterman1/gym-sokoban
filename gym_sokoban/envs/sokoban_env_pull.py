@@ -20,6 +20,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
         self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 1), dtype=np.uint8)
         self.boxes_are_on_target = [False] * num_boxes
         self.action_space = Discrete(len(ACTION_LOOKUP))
+        self.regen_room = regen_room
         
         #_ = self.reset(regen_room)
 
