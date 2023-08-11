@@ -65,8 +65,8 @@ def room_to_rgb(room, room_structure=None):
 
             grayscale_surface = np.dot(surfaces[surfaces_id][..., :3], [0.2989, 0.5870, 0.1140]).astype(np.uint8)
             room_grayscale[x_i:(x_i + 16), y_j:(y_j + 16), 0] = grayscale_surface
-    print(room_grayscale.shape)
-    print(room_grayscale)
+    # print(room_grayscale.shape)
+    # print(room_grayscale)
     return room_grayscale
 
 
