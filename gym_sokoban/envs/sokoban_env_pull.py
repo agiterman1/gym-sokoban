@@ -4,6 +4,7 @@ from gym.spaces import Box
 from gym.spaces.discrete import Discrete
 import copy
 import hashlib
+import binascii
 
 
 class PushAndPullSokobanEnv(SokobanEnv):
@@ -114,8 +115,8 @@ class PushAndPullSokobanEnv(SokobanEnv):
        
     def hash_observation(self, observation):
         observation_str = np.array2string(observation, separator=',', suppress_small=True)
-        hashed_observation = hashlib.crc32(observation_str.encode()) & 0xFFFFFFFF
-        return hashed_observation
+        crc32_hash = binascii.crc32(observation_str.encode()) & 0xFFFFFFFF
+        return crc32_hash
 
     def reward_less_steps(self):
         return 2 - (self.num_env_steps / 500)
