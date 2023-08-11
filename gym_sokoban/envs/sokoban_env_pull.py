@@ -72,7 +72,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
         if done:
             info["maxsteps_used"] = self._check_if_maxsteps()
             info["all_boxes_on_target"] = self._check_if_all_boxes_on_target()
-            self.add_result(self.past_games, self._check_if_all_boxes_on_target())
+            self.add_result(self._check_if_all_boxes_on_target())
 
         # Rewarding great behaviour -> less steps finish = more points
         if self._check_if_all_boxes_on_target():
