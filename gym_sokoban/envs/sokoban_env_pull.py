@@ -64,8 +64,8 @@ class PushAndPullSokobanEnv(SokobanEnv):
         # Convert the observation to our observation (RGB) frame
         observation = self.render(mode= self.observation)
 
-        # Reward/punish based on current observation if it happened or not
-        self._calc_current_observation_reward(observation)
+        # # Reward/punish based on current observation if it happened or not
+        # self._calc_current_observation_reward(observation)
 
         info = {
             "action.name": ACTION_LOOKUP[action],
@@ -115,8 +115,8 @@ class PushAndPullSokobanEnv(SokobanEnv):
          # else:
          #     self.reward_last += self.new_observation_reward
        
-    def hash_observation(self, observation):
-        return hash(observation)
+    # def hash_observation(self, observation):
+    #     return hash(observation)
         # observation_str = np.array2string(observation, separator=',', suppress_small=True)
         # hashed_observation = hashlib.sha256(observation_str.encode()).hexdigest()
         # return hashed_observation
