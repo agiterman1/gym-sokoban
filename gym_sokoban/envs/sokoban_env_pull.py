@@ -14,7 +14,8 @@ class PushAndPullSokobanEnv(SokobanEnv):
              max_steps=120,
              num_boxes=3,
              num_gen_steps=None,
-             regen_room = False):
+             regen_room = False,
+             observation = 'rgb_array'):
 
         super(PushAndPullSokobanEnv, self).__init__(dim_room, max_steps, num_boxes, num_gen_steps, regen_room)
         screen_height, screen_width = (dim_room[0] * 16, dim_room[1] * 16)
@@ -22,10 +23,11 @@ class PushAndPullSokobanEnv(SokobanEnv):
         self.boxes_are_on_target = [False] * num_boxes
         self.action_space = Discrete(len(ACTION_LOOKUP))
         self.regen_room = regen_room
+        self.observation = observation
         
         _ = self.reset(self.regen_room)
 
-    def step(self, action, observation_mode='raw'):
+    def step(self, action, observation_mode='rgb_array'):
         assert action in ACTION_LOOKUP
         prev_dist = self._calc_box_distance_from_target()
         prev_player_close_to_box = self._calc_box_distance_from_player()
@@ -59,8 +61,8 @@ class PushAndPullSokobanEnv(SokobanEnv):
         self._reward_player_close_to_box()
         done = self._check_if_done()
 
-        # Convert the observation to RGB frame
-        observation = self.render(mode=observation_mode)
+        # Convert the observation to our observation (RGB) frame
+        observation = self.render(mode= self.observation)
 
         # Reward/punish based on current observation if it happened or not
         self._calc_current_observation_reward(observation)

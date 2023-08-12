@@ -44,18 +44,7 @@ def room_to_rgb(room, room_structure=None):
     surfaces = [wall, floor, box_target, box_on_target, box, player, player_on_target]
 
     # Assemble the new rgb_room, with all loaded images
-    # room_rgb = np.zeros(shape=(room.shape[0] * 16, room.shape[1] * 16, 3), dtype=np.uint8)
-    # for i in range(room.shape[0]):
-    #     x_i = i * 16
-
-    #     for j in range(room.shape[1]):
-    #         y_j = j * 16
-    #         surfaces_id = room[i, j]
-
-    #         room_rgb[x_i:(x_i + 16), y_j:(y_j + 16), :] = surfaces[surfaces_id]
-
-    room_grayscale = np.zeros(shape=(room.shape[0] * 16, room.shape[1] * 16, 1), dtype=np.uint8)
-
+    room_rgb = np.zeros(shape=(room.shape[0] * 16, room.shape[1] * 16, 3), dtype=np.uint8)
     for i in range(room.shape[0]):
         x_i = i * 16
 
@@ -63,11 +52,22 @@ def room_to_rgb(room, room_structure=None):
             y_j = j * 16
             surfaces_id = room[i, j]
 
-            grayscale_surface = np.dot(surfaces[surfaces_id][..., :3], [0.2989, 0.5870, 0.1140]).astype(np.uint8)
-            room_grayscale[x_i:(x_i + 16), y_j:(y_j + 16), 0] = grayscale_surface
+            room_rgb[x_i:(x_i + 16), y_j:(y_j + 16), :] = surfaces[surfaces_id]
+
+    # room_grayscale = np.zeros(shape=(room.shape[0] * 16, room.shape[1] * 16, 1), dtype=np.uint8)
+
+    # for i in range(room.shape[0]):
+    #     x_i = i * 16
+
+    #     for j in range(room.shape[1]):
+    #         y_j = j * 16
+    #         surfaces_id = room[i, j]
+
+    #         grayscale_surface = np.dot(surfaces[surfaces_id][..., :3], [0.2989, 0.5870, 0.1140]).astype(np.uint8)
+    #         room_grayscale[x_i:(x_i + 16), y_j:(y_j + 16), 0] = grayscale_surface
     # print(room_grayscale.shape)
     # print(room_grayscale)
-    return room_grayscale
+    return room_rgb
 
 
 def room_to_tiny_world_rgb(room, room_structure=None, scale=1):

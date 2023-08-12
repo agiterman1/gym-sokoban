@@ -81,7 +81,7 @@ class SokobanEnv(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
-    def step(self, action, observation_mode='raw'):
+    def step(self, action, observation_mode='rgb_array'):
         assert action in ACTION_LOOKUP
         assert observation_mode in ['rgb_array', 'tiny_rgb_array', 'raw']
 
@@ -267,7 +267,7 @@ class SokobanEnv(gym.Env):
 
         img = self.get_image(mode, scale)
 
-        if 'raw' in mode:
+        if 'rgb_array' in mode:
             return img
 
         elif 'human' in mode:
