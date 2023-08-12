@@ -4,7 +4,7 @@ from gym.spaces import Box
 from gym.spaces.discrete import Discrete
 import copy
 import hashlib
-import hash
+# import hash
 
 
 class PushAndPullSokobanEnv(SokobanEnv):
