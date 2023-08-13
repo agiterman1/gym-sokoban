@@ -107,7 +107,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
     #     self.reward_last += - (self.num_env_steps / 1000)
         
     def _calc_current_observation_reward(self, observation):        
-        obsv_hash = hash(tuple(observation))
+        obsv_hash = hash(observation.tolist())
         if obsv_hash in self.visited_states:
             self.reward_last += self.existing_observation_reward
         else:
