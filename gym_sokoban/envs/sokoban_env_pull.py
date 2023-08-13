@@ -18,7 +18,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
              observation = 'rgb_array'):
 
         super(PushAndPullSokobanEnv, self).__init__(dim_room, max_steps, num_boxes, num_gen_steps, regen_room, observation)
-        screen_height, screen_width = (dim_room[0] * 16, dim_room[1] * 16)
+        # screen_height, screen_width = (dim_room[0] * 16, dim_room[1] * 16)
         screen_height, screen_width = (dim_room[0], dim_room[1])
 
         self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 3), dtype=np.uint8)
