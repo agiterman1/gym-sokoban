@@ -130,9 +130,9 @@ class PushAndPullSokobanEnv(SokobanEnv):
         if after_dist > -1 and prev_dist > -1:
             if after_dist < prev_dist:
                 self.reward_last += self.reward_less_steps() * self.box_getting_closer_to_target_reward * self.box_getting_closer_to_target_multiplier
-                self.box_getting_closer_to_target_multiplier = self.box_getting_closer_to_target_multiplier + 1    
+                # self.box_getting_closer_to_target_multiplier = self.box_getting_closer_to_target_multiplier + 1    
             elif after_dist > prev_dist:
-                self.box_getting_farther_to_target_multiplier = self.box_getting_farther_to_target_multiplier + 1
+                # self.box_getting_farther_to_target_multiplier = self.box_getting_farther_to_target_multiplier + 1
                 self.reward_last += self.reward_less_steps() * self.box_getting_farther_from_target_reward * self.box_getting_farther_to_target_multiplier
                 
     def _player_proximity_reward_calc(self, prev_player_close_to_box):
