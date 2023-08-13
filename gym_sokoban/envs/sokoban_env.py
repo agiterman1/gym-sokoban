@@ -19,7 +19,8 @@ class SokobanEnv(gym.Env):
                  max_steps=120,
                  num_boxes=4,
                  num_gen_steps=None,
-                 reset=True):
+                 reset=True,
+                 observation='rgb_array'):
 
         # General Configuration
         self.dim_room = dim_room
@@ -30,7 +31,7 @@ class SokobanEnv(gym.Env):
 
         self.num_boxes = num_boxes
         self.boxes_on_target = 0
-
+        self.observation = observation
         # Penalties and Rewards
         # self.penalty_for_step = -0.1
         # self.penalty_box_off_target = -1
@@ -68,7 +69,8 @@ class SokobanEnv(gym.Env):
         self.viewer = None
         self.max_steps = max_steps
         self.action_space = Discrete(len(ACTION_LOOKUP))
-        screen_height, screen_width = (dim_room[0] * 16, dim_room[1] * 16)
+        # screen_height, screen_width = (dim_room[0] * 16, dim_room[1] * 16)
+        screen_height, screen_width = (dim_room[0], dim_room[1])
         self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 1), dtype= np.uint8)
         
         self.has_started_already = False
@@ -228,7 +230,7 @@ class SokobanEnv(gym.Env):
     def _check_if_maxsteps(self):
         return (self.max_steps == self.num_env_steps)
 
-    def reset(self, second_player=False, render_mode='raw'):
+    def reset(self, second_player=False, render_mode='rgb_array'):
         # print("RESET!!")
         self.box_getting_closer_to_target_multiplier = 1
         self.box_getting_farther_to_target_multiplier = 1
@@ -259,7 +261,7 @@ class SokobanEnv(gym.Env):
         self.reward_last = 0
         self.boxes_on_target = 0
 
-        starting_observation = self.render(render_mode)
+        starting_observation = self.render(self.observation)
         return starting_observation
 
     def render(self, mode='human', close=None, scale=1):
