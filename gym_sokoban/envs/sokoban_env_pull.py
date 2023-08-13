@@ -26,6 +26,8 @@ class PushAndPullSokobanEnv(SokobanEnv):
         
         _ = self.reset(self.regen_room)
 
+        print('\n==========Loaded ver 1.5.0==========')
+
     def step(self, action, observation_mode='rgb_array'):
         assert action in ACTION_LOOKUP
         prev_dist = self._calc_box_distance_from_target()
@@ -109,6 +111,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
         obsv_hash = hash(tuple(observation))
         if obsv_hash in self.visited_states:
             self.reward_last += self.existing_observation_reward
+        else:
             self.visited_states.add(obsv_hash)
             self.visited_counter += 1
 
