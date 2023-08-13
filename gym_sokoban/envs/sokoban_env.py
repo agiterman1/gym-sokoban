@@ -58,7 +58,7 @@ class SokobanEnv(gym.Env):
         self.games_won = 0#JUST FOR PRINTING
         self.past_games = []
         self.box_getting_closer_to_target_multiplier = 1
-        self.box_getting_farther_to_target_multiplier = 2
+        self.box_getting_farther_to_target_multiplier = 1
 
         self.player_far_from_box_reward = -0.2
         self.player_close_to_box_reward = 0.3
