@@ -2,8 +2,6 @@ import numpy as np
 from .sokoban_env import SokobanEnv, CHANGE_COORDINATES
 from gym.spaces import Box
 from gym.spaces.discrete import Discrete
-import copy
-import hashlib
 # import hash
 
 
@@ -108,19 +106,11 @@ class PushAndPullSokobanEnv(SokobanEnv):
     #     self.reward_last += - (self.num_env_steps / 1000)
         
     def _calc_current_observation_reward(self, observation):        
-        obs_hash = self.hash_observation(observation)
-        if obs_hash not in self.obs_dict:
-            self.obs_dict[obs_hash] = observation
+        obsv_hash = hash(tuple(observation))
+        if obsv_hash in self.visited_states:
             self.reward_last += self.existing_observation_reward
-
-         # else:
-         #     self.reward_last += self.new_observation_reward
-       
-    # def hash_observation(self, observation):
-    #     return hash(observation)
-        # observation_str = np.array2string(observation, separator=',', suppress_small=True)
-        # hashed_observation = hashlib.sha256(observation_str.encode()).hexdigest()
-        # return hashed_observation
+            self.visited_states.add(obsv_hash)
+            self.visited_counter += 1
 
     def reward_less_steps(self):
         return 2 - (self.num_env_steps / 500)

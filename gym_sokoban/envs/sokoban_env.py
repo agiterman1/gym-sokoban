@@ -62,7 +62,9 @@ class SokobanEnv(gym.Env):
 
         self.player_far_from_box_reward = -0.2
         self.player_close_to_box_reward = 0.3
-        self.obs_dict = {}
+        self.visited_states = set()
+        self.visited_counter = 0
+
 
         ##########
         # Other Settings
@@ -235,6 +237,10 @@ class SokobanEnv(gym.Env):
         self.box_getting_closer_to_target_multiplier = 1
         self.box_getting_farther_to_target_multiplier = 1
         self.games_played = self.games_played + 1 #JUST FOR PRINTING
+
+        self.visited_states.clear()
+        self.visited_counter = 0
+
         if (not self.has_started_already or self.regen_room):
             # print("heyllo")
             try:
