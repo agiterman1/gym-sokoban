@@ -15,14 +15,13 @@ class PushAndPullSokobanEnv(SokobanEnv):
              regen_room = False,
              observation = 'rgb_array'):
 
-        super(PushAndPullSokobanEnv, self).__init__(dim_room, max_steps, num_boxes, num_gen_steps, regen_room, observation)
+        super(PushAndPullSokobanEnv, self).__init__(dim_room, max_steps, num_boxes, num_gen_steps, False, regen_room, observation)
         screen_height, screen_width = (dim_room[0], dim_room[1])
 
         self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 3), dtype=np.uint8)
         self.boxes_are_on_target = [False] * num_boxes
         self.action_space = Discrete(len(ACTION_LOOKUP))
-        self.regen_room = regen_room
-        
+        # self.regen_room = regen_room
         _ = self.reset(self.regen_room)
 
         print('\n========== Loaded ver 1.5.0 ==========')
