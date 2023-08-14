@@ -15,13 +15,14 @@ class PushAndPullSokobanEnv(SokobanEnv):
              regen_room = False,
              observation = 'rgb_array'):
 
-        super(PushAndPullSokobanEnv, self).__init__(dim_room, max_steps, num_boxes, num_gen_steps, False, regen_room, observation)
+        super(PushAndPullSokobanEnv, self).__init__(dim_room, max_steps, num_boxes, num_gen_steps, regen_room, observation)
         screen_height, screen_width = (dim_room[0], dim_room[1])
 
         self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 3), dtype=np.uint8)
         self.boxes_are_on_target = [False] * num_boxes
         self.action_space = Discrete(len(ACTION_LOOKUP))
-        # self.regen_room = regen_room
+        self.regen_room = regen_room
+        
         _ = self.reset(self.regen_room)
 
         print('\n========== Loaded ver 1.5.0 ==========')
@@ -76,6 +77,11 @@ class PushAndPullSokobanEnv(SokobanEnv):
             info["all_boxes_on_target"] = self._check_if_all_boxes_on_target()
             self.add_result(self._check_if_all_boxes_on_target())
 
+        # Rewarding great behaviour -> less steps finish = more points
+        if self._check_if_all_boxes_on_target():
+            self.reward_last += self.reward_less_steps() * self.reward_finished
+            self.games_won = self.games_won + 1 #JUST FOR PRINTING
+
         return observation, self.reward_last, done, info
     
     # Just for debugging#######
@@ -99,15 +105,6 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
     # def _punish_steps(self):
     #     self.reward_last += - (self.num_env_steps / 1000)
-        
-    def _calc_current_observation_reward(self, observation):        
-        state_hash = hash(tuple(observation.flatten()))
-        if state_hash in self.visited_states:
-            self.visited_counter += 1
-            self.reward_last += self.existing_observation_reward
-        else:
-            self.visited_states.add(state_hash)
-
 
     def reward_less_steps(self):
         return 2 - (self.num_env_steps / 500)

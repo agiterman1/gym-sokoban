@@ -20,7 +20,6 @@ class SokobanEnv(gym.Env):
                  num_boxes=4,
                  num_gen_steps=None,
                  reset=True,
-                 regen_room=False,
                  observation='rgb_array'):
 
         # General Configuration
@@ -75,8 +74,6 @@ class SokobanEnv(gym.Env):
         self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 3), dtype= np.uint8)
         
         self.has_started_already = False
-
-        self.regen_room = regen_room
 
         if reset:
             # Initialize Room
@@ -240,9 +237,12 @@ class SokobanEnv(gym.Env):
         # print("RESET!!")
         self.box_getting_closer_to_target_multiplier = 1
         self.box_getting_farther_to_target_multiplier = 1
-        self.games_played = self.games_played + 1 #JUST FOR PRINTING
+        self.games_played += 1 #JUST FOR PRINTING
+
+        self.visited_states.clear()
+        self.visited_counter = 0
+
         if (not self.has_started_already or self.regen_room):
-            # print("heyllo")
             try:
                 self.has_started_already = True
                 self.room_fixed, self.room_state, self.box_mapping = generate_room(
@@ -254,17 +254,15 @@ class SokobanEnv(gym.Env):
                 self.original_room_fixed = copy.deepcopy(self.room_fixed)
                 self.original_room_state = copy.deepcopy(self.room_state)
                 self.original_box_mapping = copy.deepcopy(self.box_mapping)
-                self.player_position = np.argwhere(self.room_state == 5)[0]
-
             except (RuntimeError, RuntimeWarning) as e:
                 print("[SOKOBAN] Runtime Error/Warning: {}".format(e))
                 print("[SOKOBAN] Retry . . .")
                 return self.reset(second_player=second_player, render_mode=render_mode)
-        else:
-            self.room_fixed = copy.deepcopy(self.original_room_fixed)
-            self.room_state = copy.deepcopy(self.original_room_state)
-            self.box_mapping = copy.deepcopy(self.original_box_mapping)
-            self.player_position = np.argwhere(self.room_state == 5)[0]
+        
+        self.room_fixed = copy.deepcopy(self.original_room_fixed)
+        self.room_state = copy.deepcopy(self.original_room_state)
+        self.box_mapping = copy.deepcopy(self.original_box_mapping)
+        self.player_position = np.argwhere(self.room_state == 5)[0]
         self.num_env_steps = 0
         self.reward_last = 0
         self.boxes_on_target = 0
