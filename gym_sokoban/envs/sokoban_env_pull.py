@@ -65,7 +65,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
         observation = self.render(mode=observation_mode)
 
         # # Reward/punish based on current observation if it happened or not
-        self._calc_current_observation_reward(observation)
+        # self._calc_current_observation_reward(observation)
 
         info = {
             "action.name": ACTION_LOOKUP[action],
@@ -76,11 +76,6 @@ class PushAndPullSokobanEnv(SokobanEnv):
             info["maxsteps_used"] = self._check_if_maxsteps()
             info["all_boxes_on_target"] = self._check_if_all_boxes_on_target()
             self.add_result(self._check_if_all_boxes_on_target())
-
-        # Rewarding great behaviour -> less steps finish = more points
-        if self._check_if_all_boxes_on_target():
-            self.reward_last += self.reward_less_steps() * self.reward_finished
-            self.games_won = self.games_won + 1 #JUST FOR PRINTING
 
         return observation, self.reward_last, done, info
     

@@ -210,11 +210,12 @@ class SokobanEnv(gym.Env):
         elif current_boxes_on_target < self.boxes_on_target:
             self.reward_last += self.penalty_box_off_target
         
+        # Rewarding great behaviour -> less steps finish = more points
         game_won = self._check_if_all_boxes_on_target()        
         if game_won:
             print('-- solved --')
-            self.games_won += 1
-            self.reward_last += self.reward_finished
+            self.reward_last += self.reward_less_steps() * self.reward_finished
+            self.games_won += 1 # JUST FOR PRINTING
         
         self.boxes_on_target = current_boxes_on_target
 
@@ -242,7 +243,6 @@ class SokobanEnv(gym.Env):
         self.visited_counter = 0
 
         if (not self.has_started_already or self.regen_room):
-            # print("heyllo")
             try:
                 self.has_started_already = True
                 self.room_fixed, self.room_state, self.box_mapping = generate_room(
