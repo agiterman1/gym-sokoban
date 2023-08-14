@@ -64,7 +64,6 @@ class SokobanEnv(gym.Env):
         self.player_close_to_box_reward = 0.3
         self.visited_states = set()
         self.visited_counter = 0
-        self.solve_counter = 0
 
         ##########
         # Other Settings
@@ -214,7 +213,7 @@ class SokobanEnv(gym.Env):
         game_won = self._check_if_all_boxes_on_target()        
         if game_won:
             print('-- solved --')
-            self.solve_counter += 1
+            self.games_won += 1
             self.reward_last += self.reward_finished
         
         self.boxes_on_target = current_boxes_on_target
@@ -237,7 +236,7 @@ class SokobanEnv(gym.Env):
         # print("RESET!!")
         self.box_getting_closer_to_target_multiplier = 1
         self.box_getting_farther_to_target_multiplier = 1
-        self.games_played = self.games_played + 1 #JUST FOR PRINTING
+        self.games_played += 1 #JUST FOR PRINTING
 
         self.visited_states.clear()
         self.visited_counter = 0
