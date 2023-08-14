@@ -214,8 +214,8 @@ class SokobanEnv(gym.Env):
         game_won = self._check_if_all_boxes_on_target()        
         if game_won:
             print('-- solved --')
-            self.reward_last += self.reward_less_steps() * self.reward_finished
             self.games_won += 1 # JUST FOR PRINTING
+            self.reward_last += self.reward_less_steps() * self.reward_finished
         
         self.boxes_on_target = current_boxes_on_target
 

@@ -77,10 +77,6 @@ class PushAndPullSokobanEnv(SokobanEnv):
             info["all_boxes_on_target"] = self._check_if_all_boxes_on_target()
             self.add_result(self._check_if_all_boxes_on_target())
 
-        # Rewarding great behaviour -> less steps finish = more points
-        if self._check_if_all_boxes_on_target():
-            self.reward_last += self.reward_less_steps() * self.reward_finished
-            self.games_won = self.games_won + 1 #JUST FOR PRINTING
 
         return observation, self.reward_last, done, info
     
