@@ -110,7 +110,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
         state_hash = hash(tuple(observation.flatten()))
         if state_hash in self.visited_states:
             self.visited_counter += 1
-            self.reward_last += self.penelty_same_state
+            self.reward_last += self.existing_observation_reward
         else:
             self.visited_states.add(state_hash)
 
