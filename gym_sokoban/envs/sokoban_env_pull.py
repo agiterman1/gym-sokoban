@@ -65,7 +65,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
         observation = self.render(mode=observation_mode)
 
         # # Reward/punish based on current observation if it happened or not
-        self._calc_current_observation_reward(observation)
+        # self._calc_current_observation_reward(observation)
 
         info = {
             "action.name": ACTION_LOOKUP[action],
@@ -107,12 +107,13 @@ class PushAndPullSokobanEnv(SokobanEnv):
     #     self.reward_last += - (self.num_env_steps / 1000)
         
     def _calc_current_observation_reward(self, observation):        
-        obsv_hash = hash(tuple(map(tuple, observation.tolist())))
-        if obsv_hash in self.visited_states:
-            self.reward_last += self.existing_observation_reward
-        else:
-            self.visited_states.add(obsv_hash)
+        state_hash = hash(tuple(observation.flatten()))
+        if state_hash in self.visited_states:
             self.visited_counter += 1
+            self.reward_last += self.penelty_same_state
+        else:
+            self.visited_states.add(state_hash)
+
 
     def reward_less_steps(self):
         return 2 - (self.num_env_steps / 500)
