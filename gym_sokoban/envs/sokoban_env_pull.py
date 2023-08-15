@@ -2,6 +2,8 @@ import numpy as np
 from .sokoban_env import SokobanEnv, CHANGE_COORDINATES
 from gym.spaces import Box
 from gym.spaces.discrete import Discrete
+import copy
+import hashlib
 # import hash
 
 
@@ -15,23 +17,20 @@ class PushAndPullSokobanEnv(SokobanEnv):
              regen_room = False,
              observation = 'rgb_array'):
 
-        super(PushAndPullSokobanEnv, self).__init__(dim_room, max_steps, num_boxes, num_gen_steps, regen_room, observation)
+        super(PushAndPullSokobanEnv, self).__init__(dim_room=dim_room, max_steps=max_steps, num_boxes=num_boxes, num_gen_steps=num_gen_steps, reset=False, regen_room=regen_room, observation=observation)
+        # screen_height, screen_width = (dim_room[0] * 16, dim_room[1] * 16)
         screen_height, screen_width = (dim_room[0], dim_room[1])
-
         self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 3), dtype=np.uint8)
         self.boxes_are_on_target = [False] * num_boxes
         self.action_space = Discrete(len(ACTION_LOOKUP))
-        self.regen_room = regen_room
-        
+        # self.regen_room = regen_room
+
         _ = self.reset(self.regen_room)
 
-        print('\n========== Loaded ver 1.5.0 ==========')
-
-    def step(self, action, observation_mode='tiny_rgb_array'):
+    def step(self, action, observation_mode='rgb_array'):
         assert action in ACTION_LOOKUP
         prev_dist = self._calc_box_distance_from_target()
-        if self.num_boxes == 1:
-            prev_player_close_to_box = self._calc_box_distance_from_player()
+        prev_player_close_to_box = self._calc_box_distance_from_player()
         self.num_env_steps += 1
 
         self.new_box_position = None
@@ -54,17 +53,16 @@ class PushAndPullSokobanEnv(SokobanEnv):
         self._calc_reward()
 
         # Getting player to box proximity
-        if self.num_boxes == 1:
-            self._player_proximity_reward_calc(prev_player_close_to_box)
+        self._player_proximity_reward_calc(prev_player_close_to_box)
         # Getting closer reward
         self._box_getting_closer_reward_calc(prev_dist)
         # Punish steps harder the more steps it does
         # self._punish_steps()
-        self._reward_player_close_to_box()
+        # self._reward_player_close_to_box()
         done = self._check_if_done()
 
         # Convert the observation to our observation (RGB) frame
-        observation = self.render(mode=observation_mode)
+        observation = self.render(mode= self.observation)
 
         # # Reward/punish based on current observation if it happened or not
         # self._calc_current_observation_reward(observation)
@@ -79,6 +77,10 @@ class PushAndPullSokobanEnv(SokobanEnv):
             info["all_boxes_on_target"] = self._check_if_all_boxes_on_target()
             self.add_result(self._check_if_all_boxes_on_target())
 
+        # Rewarding great behaviour -> less steps finish = more points
+        if self._check_if_all_boxes_on_target():
+            self.reward_last += self.reward_less_steps() * self.reward_finished
+            self.games_won = self.games_won + 1 #JUST FOR PRINTING
 
         return observation, self.reward_last, done, info
     
@@ -103,6 +105,21 @@ class PushAndPullSokobanEnv(SokobanEnv):
 
     # def _punish_steps(self):
     #     self.reward_last += - (self.num_env_steps / 1000)
+        
+    def _calc_current_observation_reward(self, observation):        
+        obs_hash = self.hash_observation(observation)
+        if obs_hash not in self.obs_dict:
+            self.obs_dict[obs_hash] = observation
+            self.reward_last += self.existing_observation_reward
+
+         # else:
+         #     self.reward_last += self.new_observation_reward
+       
+    # def hash_observation(self, observation):
+    #     return hash(observation)
+        # observation_str = np.array2string(observation, separator=',', suppress_small=True)
+        # hashed_observation = hashlib.sha256(observation_str.encode()).hexdigest()
+        # return hashed_observation
 
     def reward_less_steps(self):
         return 2 - (self.num_env_steps / 500)
@@ -111,11 +128,11 @@ class PushAndPullSokobanEnv(SokobanEnv):
         after_dist = self._calc_box_distance_from_target()
         if after_dist > -1 and prev_dist > -1:
             if after_dist < prev_dist:
-                self.reward_last += self.reward_less_steps() * self.box_getting_closer_to_target_reward * self.box_getting_closer_to_target_multiplier
+                self.reward_last += self.reward_less_steps() * self.box_getting_closer_to_target_reward
                 # self.box_getting_closer_to_target_multiplier = self.box_getting_closer_to_target_multiplier + 1    
             elif after_dist > prev_dist:
                 # self.box_getting_farther_to_target_multiplier = self.box_getting_farther_to_target_multiplier + 1
-                self.reward_last += self.reward_less_steps() * self.box_getting_farther_from_target_reward * self.box_getting_farther_to_target_multiplier
+                self.reward_last += self.reward_less_steps() * self.box_getting_farther_from_target_reward
                 
     def _player_proximity_reward_calc(self, prev_player_close_to_box):
         after_player_close_to_box = self._calc_box_distance_from_player()
@@ -126,7 +143,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
                 self.reward_last += self.reward_less_steps() * self.player_getting_farther_from_box_reward
 
     def _calc_box_distance_from_player(self):
-        box_location = self._find_box_location()[0]
+        box_location = self._find_box_location()
         if box_location is None or self.player_position is None:
             return -1
 
@@ -139,20 +156,20 @@ class PushAndPullSokobanEnv(SokobanEnv):
         if box_location is None or target_location is None:
             return -1
 
-        distance = np.sum((box_location - target_location)**2 + (box_location - target_location)**2) # no need to square root
+        distance = (box_location[0] - target_location[0])**2 + (box_location[1] - target_location[1])**2 #no need to square root
         return distance
     
     def _find_target_location(self):
-        idx = np.argwhere(self.room_state == 2)
-        if len(idx) > 0:
-            self.current_target_pos = np.asarray([(loc[0], loc[1]) for loc in idx])
+        idx = np.argmax(self.room_state == 2)
+        if self.room_state.flat[idx] == 2:
+            self.current_target_pos = np.unravel_index(idx, self.room_state.shape)
 
         return self.current_target_pos
 
     def _find_box_location(self):
-        idx = np.argwhere(self.room_state == 4)
-        if len(idx) > 0:
-            self.current_box_pos = np.asarray([(loc[0], loc[1]) for loc in idx])
+        idx = np.argmax(self.room_state == 4)
+        if self.room_state.flat[idx] == 4:
+            self.current_box_pos = np.unravel_index(idx, self.room_state.shape)
 
         return self.current_box_pos
     

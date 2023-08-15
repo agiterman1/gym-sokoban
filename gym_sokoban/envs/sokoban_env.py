@@ -20,8 +20,10 @@ class SokobanEnv(gym.Env):
                  num_boxes=4,
                  num_gen_steps=None,
                  reset=True,
+                 regen_room=False,
                  observation='rgb_array'):
 
+        self.regen_room = regen_room
         # General Configuration
         self.dim_room = dim_room
         if num_gen_steps == None:
@@ -41,35 +43,34 @@ class SokobanEnv(gym.Env):
 ##################
         # Penalties and Rewards
         self.penalty_for_step = -0.1
-        
         self.penalty_box_off_target = -1
         self.reward_box_on_target = 1
         self.reward_finished = 100
         self.reward_last = 0
         self.box_getting_farther_from_target_reward = -5
-        self.box_getting_closer_to_target_reward = 0.05
-        self.player_getting_farther_from_box_reward = -3
+        self.box_getting_closer_to_target_reward = 5
+        self.player_getting_farther_from_box_reward = -2.1
         self.player_getting_closer_to_box_reward = 2
         # self.player_moved_reward = 0.05
         # self.new_observation_reward = 0.05
-        self.existing_observation_reward = -0.2
+        # self.existing_observation_reward = -0.2
 
         self.games_played = 0#JUST FOR PRINTING
         self.games_won = 0#JUST FOR PRINTING
         self.past_games = []
-        self.box_getting_closer_to_target_multiplier = 1
-        self.box_getting_farther_to_target_multiplier = 1
+        # self.box_getting_closer_to_target_multiplier = 1
+        # self.box_getting_farther_to_target_multiplier = 1
 
-        self.player_far_from_box_reward = -0.2
-        self.player_close_to_box_reward = 0.1
-        self.visited_states = set()
-        self.visited_counter = 0
+        self.player_far_from_box_reward = -0.3
+        self.player_close_to_box_reward = 0.05
+        self.obs_dict = {}
 
         ##########
         # Other Settings
         self.viewer = None
         self.max_steps = max_steps
         self.action_space = Discrete(len(ACTION_LOOKUP))
+        # screen_height, screen_width = (dim_room[0] * 16, dim_room[1] * 16)
         screen_height, screen_width = (dim_room[0], dim_room[1])
         self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 3), dtype= np.uint8)
         
@@ -210,12 +211,9 @@ class SokobanEnv(gym.Env):
         elif current_boxes_on_target < self.boxes_on_target:
             self.reward_last += self.penalty_box_off_target
         
-        # Rewarding great behaviour -> less steps finish = more points
         game_won = self._check_if_all_boxes_on_target()        
         if game_won:
-            print('-- solved --')
-            self.games_won += 1 # JUST FOR PRINTING
-            self.reward_last += self.reward_less_steps() * self.reward_finished
+            self.reward_last += self.reward_finished
         
         self.boxes_on_target = current_boxes_on_target
 
@@ -237,12 +235,9 @@ class SokobanEnv(gym.Env):
         # print("RESET!!")
         self.box_getting_closer_to_target_multiplier = 1
         self.box_getting_farther_to_target_multiplier = 1
-        self.games_played += 1 #JUST FOR PRINTING
-
-        self.visited_states.clear()
-        self.visited_counter = 0
-
+        self.games_played = self.games_played + 1 #JUST FOR PRINTING
         if (not self.has_started_already or self.regen_room):
+            # print("heyllo")
             try:
                 self.has_started_already = True
                 self.room_fixed, self.room_state, self.box_mapping = generate_room(
@@ -254,20 +249,22 @@ class SokobanEnv(gym.Env):
                 self.original_room_fixed = copy.deepcopy(self.room_fixed)
                 self.original_room_state = copy.deepcopy(self.room_state)
                 self.original_box_mapping = copy.deepcopy(self.box_mapping)
+                self.player_position = np.argwhere(self.room_state == 5)[0]
+
             except (RuntimeError, RuntimeWarning) as e:
                 print("[SOKOBAN] Runtime Error/Warning: {}".format(e))
                 print("[SOKOBAN] Retry . . .")
                 return self.reset(second_player=second_player, render_mode=render_mode)
-        
-        self.room_fixed = copy.deepcopy(self.original_room_fixed)
-        self.room_state = copy.deepcopy(self.original_room_state)
-        self.box_mapping = copy.deepcopy(self.original_box_mapping)
-        self.player_position = np.argwhere(self.room_state == 5)[0]
+        else:
+            self.room_fixed = copy.deepcopy(self.original_room_fixed)
+            self.room_state = copy.deepcopy(self.original_room_state)
+            self.box_mapping = copy.deepcopy(self.original_box_mapping)
+            self.player_position = np.argwhere(self.room_state == 5)[0]
         self.num_env_steps = 0
         self.reward_last = 0
         self.boxes_on_target = 0
 
-        starting_observation = self.render(self.observation)
+        starting_observation = self.render(mode=self.observation)
         return starting_observation
 
     def render(self, mode='human', close=None, scale=1):
