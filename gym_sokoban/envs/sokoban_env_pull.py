@@ -160,7 +160,7 @@ class PushAndPullSokobanEnv(SokobanEnv):
         if box_location is None or target_location is None:
             return -1
 
-        distance = (box_location[0] - target_location[0])**2 + (box_location[1] - target_location[1])**2 #no need to square root
+        distance = np.sum((box_location - target_location)**2 + (box_location - target_location)**2) #no need to square root
         return distance
     
     def _find_target_location(self):
