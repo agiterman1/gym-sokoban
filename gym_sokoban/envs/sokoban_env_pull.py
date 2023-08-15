@@ -30,7 +30,8 @@ class PushAndPullSokobanEnv(SokobanEnv):
     def step(self, action, observation_mode='tiny_rgb_array'):
         assert action in ACTION_LOOKUP
         prev_dist = self._calc_box_distance_from_target()
-        prev_player_close_to_box = self._calc_box_distance_from_player()
+        if self.num_boxes == 1:
+            prev_player_close_to_box = self._calc_box_distance_from_player()
         self.num_env_steps += 1
 
         self.new_box_position = None
@@ -53,7 +54,8 @@ class PushAndPullSokobanEnv(SokobanEnv):
         self._calc_reward()
 
         # Getting player to box proximity
-        self._player_proximity_reward_calc(prev_player_close_to_box)
+        if self.num_boxes == 1:
+            self._player_proximity_reward_calc(prev_player_close_to_box)
         # Getting closer reward
         self._box_getting_closer_reward_calc(prev_dist)
         # Punish steps harder the more steps it does
@@ -137,20 +139,20 @@ class PushAndPullSokobanEnv(SokobanEnv):
         if box_location is None or target_location is None:
             return -1
 
-        distance = (box_location[0] - target_location[0])**2 + (box_location[1] - target_location[1])**2 #no need to square root
+        distance = np.sum((box_location - target_location)**2 + (box_location - target_location)**2) # no need to square root
         return distance
     
     def _find_target_location(self):
-        idx = np.argmax(self.room_state == 2)
-        if self.room_state.flat[idx] == 2:
-            self.current_target_pos = np.unravel_index(idx, self.room_state.shape)
+        idx = np.argwhere(self.room_state == 2)
+        if len(idx) > 0:
+            self.current_target_pos = np.asarray([(loc[0], loc[1]) for loc in idx])
 
         return self.current_target_pos
 
     def _find_box_location(self):
-        idx = np.argmax(self.room_state == 4)
-        if self.room_state.flat[idx] == 4:
-            self.current_box_pos = np.unravel_index(idx, self.room_state.shape)
+        idx = np.argwhere(self.room_state == 4)
+        if len(idx) > 0:
+            self.current_box_pos = np.asarray([(loc[0], loc[1]) for loc in idx])
 
         return self.current_box_pos
     
